@@ -3,6 +3,7 @@ require 'spec_helper'
 describe User do
   before {@user= User.new(name:"Junyu Yang", email:"prowessyang@gmail.com", password:"telescope",password_confirmation:"telescope")}
   subject {@user}
+  
   it {should respond_to(:name)}
   it {should respond_to(:email)}
   it {should respond_to(:password_digest)}
@@ -10,8 +11,21 @@ describe User do
   it {should respond_to(:password_confirmation)}
   it {should respond_to(:remember_token)}
   it {should respond_to(:authenticate)}
+  it {should respond_to(:admin)}
 
   it {should be_valid}
+  it {should_not be_admin}
+
+  describe "when set to be admin" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+    it {should be_admin} #there has to be a method for user admin?
+    #yet, since admin is a boolean in db. Rails automatically figures out and add the admin? method
+    
+  end
+
 
   describe "when the name is empty" do
   	before {@user.name = " "}

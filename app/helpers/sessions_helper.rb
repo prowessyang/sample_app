@@ -12,7 +12,7 @@ module SessionsHelper
 	end
 	
 	def current_user= (user) # "=" means this def only handles assignment. For current_user as a field, the def is below.
-														# the "=" has to  
+														# the "=" has to be right behind current_user.
 		@current_user = user
 	end
 	
@@ -27,6 +27,14 @@ module SessionsHelper
 		current_user.update_attribute(:remember_token, User.digest(User.new_remember_token))#here it should not be nil, because nil is a set number. It can be duplicated.
 		cookies[:remember_token]=nil
 		self.current_user = nil
+	end
+
+	def redirect_back_or(default)
+		redirect_to(session[:return_to]||default)
+		session.delete(:return_to)
+	end
+	def store_location
+		session[:return_to] = request.url if request.get?	
 	end
 end
 

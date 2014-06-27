@@ -1,0 +1,10 @@
+<% provide(:title, 'All users') %>
+<h1>All users</h1>
+<%= will_paginate %>
+<ul class = "users">
+	<% @users.each do |user| %>
+		<%= render user %> 
+		<!-- render user variable instead of partial name 'user'. The user variable then look for partial view _user.html.erb -->
+	<% end %>
+</ul>
+<%= will_paginate %>

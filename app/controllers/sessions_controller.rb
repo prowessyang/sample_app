@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
 			# render 'users/show'
 			# using render works but if user refreshes the page, the submission repeats. Use redirect_to instead.
 			sign_in user #sign_in method can be found in sessions_helper
-			redirect_to user
+			redirect_back_or user
 		else
 			flash.now[:error] = 'Invalid email/password combination'
 			render 'new'
