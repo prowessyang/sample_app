@@ -12,5 +12,9 @@ FactoryGirl.define do
 		factory :admin do #this code means "FactoryGirl.create(:admin)" will create a user that is admin
 			admin true
 		end
+	end
+	factory :micropost do
+		content "I have a big tooth"
+		user
 	end	
 end

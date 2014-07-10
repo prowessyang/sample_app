@@ -1,4 +1,4 @@
-module SessionsHelper
+module SessionsHelper # this module is included in application controller. So the methods in this module is available across application.
 	def sign_in(user)
 		remember_token = User.new_remember_token
 		cookies.permanent[:remember_token] = remember_token #cookies[:remember_token]={value:remember_token,expires:20.years.from_now.utc}
@@ -22,7 +22,15 @@ module SessionsHelper
 	end
 	#why can't sign_in method use the same current_user method as defined in the last block? Why there has to be a separate method set for him?
 	# the last block, can I use if @current_user == nil blablabla, else @current_user
-
+	def current_user?(user)
+		user == current_user
+	end
+	def sign_in_user
+		unless sign_in?
+			store_location
+			redirect_to signin_path, notice:"Please sign in"
+		end
+	end
 	def sign_out
 		current_user.update_attribute(:remember_token, User.digest(User.new_remember_token))#here it should not be nil, because nil is a set number. It can be duplicated.
 		cookies[:remember_token]=nil
@@ -33,9 +41,11 @@ module SessionsHelper
 		redirect_to(session[:return_to]||default)
 		session.delete(:return_to)
 	end
-	def store_location
-		session[:return_to] = request.url if request.get?	
+
+	def store_location # pair with redirect_back_or() method. use :return_to key to store the original request.url
+ 		session[:return_to] = request.url if request.get?	
 	end
+
 end
 
 

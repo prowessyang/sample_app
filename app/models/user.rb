@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+	has_many :microposts
 	before_save {self.email.downcase!}
 	before_create :create_remember_token
 
@@ -14,6 +15,14 @@ class User < ActiveRecord::Base
 	end
 	def User.digest(token)
 		Digest::SHA1.hexdigest(token.to_s)		
+	end
+
+	def feed #it is a field this time. not method 
+		Micropost.where("user_id = ?", id)
+		#Micropost.where("user = ?", self.id) # the ? here is to prevent SQL injection. 
+	end
+	def followed_users
+		[User.find(self.id + 2 )]
 	end
 
 	private

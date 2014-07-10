@@ -12,7 +12,7 @@ describe User do
   it {should respond_to(:remember_token)}
   it {should respond_to(:authenticate)}
   it {should respond_to(:admin)}
-
+  it {should respond_to(:microposts)} #notice the s in the end of microposts? it's the method pulling all the microposts.
   it {should be_valid}
   it {should_not be_admin}
 
@@ -103,5 +103,25 @@ describe User do
   describe "remember token" do
     before {@user.save}
     its(:remember_token) {should_not be_blank}
+  end
+  describe "microposts association" do
+    before {@user.save}
+    let!(:old_micropost) do
+      FactoryGirl.create(:micropost, user:@user, created_at: 1.day.ago)
+    end
+    let!(:new_micropost) {  
+      FactoryGirl.create(:micropost, user:@user, created_at: 1.hour.ago)
+    }
+    it "should be in the reverse time order" do
+      expect(@user.microposts.to_a).to eq [new_micropost, old_micropost]
+    end
+    describe "status" do
+      let (:unfollowed_post) {
+        FactoryGirl.create(:micropost, user:FactoryGirl.create(:user))
+      }
+      its(:feed) {should include(new_micropost)}
+      its(:feed) {should include(old_micropost)}
+      its(:feed) {should_not include(unfollowed_post)}
+    end
   end
 end

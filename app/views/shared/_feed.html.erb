@@ -1,0 +1,14 @@
+<h1>Feed</h1>
+<% if @feed_items.any? %>
+	<%= will_paginate @feed_items %>
+	<ol class = "microposts">
+		<% @feed_items.each do |item| %>
+		<li id = "<%= item.id %>">
+			<%= link_to gravatar_for(item.user), user_path(item.user) %>
+			<span class = "user"><%= link_to item.user.name, user_path(item.user) %></span>
+			<span class = "content"><%= item.content %></span>
+			<span class = "timestamp">Posted <%= time_ago_in_words(item.created_at) unless item.created_at.blank? %> ago. </span>
+		</li>
+		<% end %>
+	</ol>
+<% end %>

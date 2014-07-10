@@ -8,6 +8,21 @@ describe "Static pages" do
     it {should have_selector('h1',text:'Sample App')}
     it {should have_title('Ruby on Rails Tutorial Sample App')}
     it {should_not have_title('| Home')}
+
+    describe "for signed in users" do
+      let(:user) {FactoryGirl.create(:user)}
+      before {
+        FactoryGirl.create(:micropost, user:user, content:"abcdefg")
+        FactoryGirl.create(:micropost, user:user, content:"uvwxyz")
+        sign_in user
+        visit root_path
+      }
+      it "should render users feed" do
+        user.feed.each do |item|
+          expect(page).to have_selector("li##{item.id}", text:item.content)
+        end
+      end
+    end
   end
 
   describe "Help page" do

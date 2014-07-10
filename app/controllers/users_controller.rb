@@ -1,13 +1,14 @@
 class UsersController < ApplicationController
   before_action :sign_in_user, only: [:edit, :update, :index, :destroy] #means, before excuting edit or update action, call "sign_in_user" method which is defined in the latter part of this page. only:[] is a hash. By default, before action filter applies to all action. Use only to limit the sign in restriction to only edit and update actions. 
   before_action :correct_user, only: [:edit, :update] # with this second filter the previous filter is actually unnecessary. Also, added :show in the restriction list only: []
-  before_action :admin_user, only: [:destroy]
+  before_action :admin_user, only: [:destroy] #call method admin_user before executing :destroy action.
   def index
     @users = User.paginate(page:params[:page])
   end
 
   def show
   	@user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page:params[:page]) #just like index action for users.
   end
   def new
   	@user = User.new
