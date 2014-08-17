@@ -138,4 +138,61 @@ describe "UserPages" do
 			specify { expect(user.reload.name).to eq "Tesla"}
 		end
 	end
+
+	describe "following/followers" do
+		let(:user) {FactoryGirl.create(:user)}
+		let(:other_user) {FactoryGirl.create(:user)}
+		before {user.follow!(other_user)}
+		describe "followed users" do
+			before {
+				sign_in user
+				visit following_user_path(user)
+			}
+			it {should have_title(full_title("Following"))}
+			it {should have_selector('h3', text: 'Following')}
+			it {should have_link(other_user.name, href: user_path(other_user))}
+		end
+	end
+
+	describe "follow/unfollow button" do
+		let(:user) {FactoryGirl.create(:user)}
+		let(:other_user) {FactoryGirl.create(:user)}
+		before {sign_in user}
+		
+		describe "follow button" do
+			before {visit user_path(other_user)}
+			it {should have_button("Follow")}
+			it "should +1 followed users count" do 
+				expect {click_button 'Follow'}.to change(user.followed_users, :count).by(1)
+			end
+			it "should +1 follower count" do
+				expect {click_button 'Follow'}.to change(other_user.followers, :count).by(1)
+			end
+			describe "should have 'Unfollow' button after click" do
+				before {click_button 'Follow'}
+				it {should have_xpath("//input[@value='Unfollow']")}
+			end
+		end
+
+		describe "unfollow button" do
+			before {
+				visit user_path(other_user)
+				click_button "Follow"
+			}
+			it "should -1 followers count" do
+				expect {click_button "Unfollow"}.to change(other_user.followers, :count).by(-1)
+				#expect {click_button "Unfollow"}.to change(other_user.followers.count).by(-1) doesn't work... it is expecting a symbol after the comma. 
+			end
+
+			it "should -1 followed users count" do
+				expect {click_button "Unfollow"}.to change(user.followed_users, :count).by(-1)
+			end
+			describe "should have 'Follow' button after click" do
+				before {click_button 'Unfollow'}
+				it {should have_xpath("//input[@value='Follow']")}
+			end
+		end
+
+	end
+
 end

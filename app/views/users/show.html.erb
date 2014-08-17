@@ -8,8 +8,12 @@
 			</h1>
 			<br> <%= @user.email %>			
 		</section>
+		<section>
+			<%= render 'shared/stats' %>
+		</section>
 	</aside>
 	<section>
+		<%= render 'follow_form' %>
 		<% if @user.microposts.any? %>
 			<h3>Microposts (<%= @user.microposts.count %>)</h3>
 				<ol class = "microposts">

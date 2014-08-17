@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :sign_in_user, only: [:edit, :update, :index, :destroy] #means, before excuting edit or update action, call "sign_in_user" method which is defined in the latter part of this page. only:[] is a hash. By default, before action filter applies to all action. Use only to limit the sign in restriction to only edit and update actions. 
+  before_action :sign_in_user, only: [:edit, :update, :index, :destroy, :followers, :following] #means, before excuting edit or update action, call "sign_in_user" method which is defined in the latter part of this page. only:[] is a hash. By default, before action filter applies to all action. Use only to limit the sign in restriction to only edit and update actions. 
   before_action :correct_user, only: [:edit, :update] # with this second filter the previous filter is actually unnecessary. Also, added :show in the restriction list only: []
   before_action :admin_user, only: [:destroy] #call method admin_user before executing :destroy action.
   def index
@@ -42,6 +42,20 @@ class UsersController < ApplicationController
     @user = User.find(params[:id]).destroy
     flash[:success] = "User deleted!"
     redirect_to users_path
+  end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
+    render "show_follow"  
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render "show_follow"
   end
 
   private

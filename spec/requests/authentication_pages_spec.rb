@@ -81,7 +81,34 @@ describe "Authentication" do
               specify {expect(response).to redirect_to(signin_path)}
             end
           end
-        end        
+
+          describe "visiting the following page" do
+            before {visit following_user_path(user)}
+            it {should have_title("Sign in")}
+          end
+          
+          describe "visiting the follower page" do
+            before {visit followers_user_path(user)}
+            it {should have_title("Sign in")}
+          end
+
+        end
+        
+        describe "in the relationship controller" do
+          
+          describe "submitting create action" do
+            before {post relationships_path}
+            specify {expect(response).to redirect_to(signin_path)}
+          end
+          describe "submitting destory action" do
+            before {delete relationship_path(1)} 
+            # The number "1" is to avoid creating relationship object; There is no relationship(1) object however. It should redirect before it is even required.
+            specify {expect(response).to redirect_to(signin_path)}
+
+          end
+
+        end
+
       end
 
       describe "as wrong user" do

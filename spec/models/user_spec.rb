@@ -13,6 +13,15 @@ describe User do
   it {should respond_to(:authenticate)}
   it {should respond_to(:admin)}
   it {should respond_to(:microposts)} #notice the s in the end of microposts? it's the method pulling all the microposts.
+  it {should respond_to(:feed)}
+  it {should respond_to(:relationships)}
+  it {should respond_to(:followed_users)}
+  it {should respond_to(:following?)}
+  it {should respond_to(:follow!)}
+  it {should respond_to(:relationships)}
+  it {should respond_to(:reverse_relationships)}
+  it {should respond_to(:followed_users)}
+  it {should respond_to(:followers)}
   it {should be_valid}
   it {should_not be_admin}
 
@@ -115,13 +124,47 @@ describe User do
     it "should be in the reverse time order" do
       expect(@user.microposts.to_a).to eq [new_micropost, old_micropost]
     end
+
     describe "status" do
       let (:unfollowed_post) {
         FactoryGirl.create(:micropost, user:FactoryGirl.create(:user))
       }
+      let (:followed_user) {FactoryGirl.create(:user)}
+      before {
+        @user.follow!(followed_user)
+        3.times {followed_user.microposts.create!(content: "wowowowowowo")}
+      }
+
       its(:feed) {should include(new_micropost)}
       its(:feed) {should include(old_micropost)}
       its(:feed) {should_not include(unfollowed_post)}
+      its(:feed) {
+        followed_user.microposts.each do | post |
+          should include(post)
+        end
+      }
+    end
+
+
+  end
+  describe "following" do
+    let(:other_user) {FactoryGirl.create(:user)}
+    before do
+      @user.save
+      @user.follow!(other_user)
+    end
+    it {should be_following(other_user)}
+    its(:followed_users) {should include(other_user)}
+    describe "unfollowing" do
+      before {@user.unfollow!(other_user)}
+      it {should_not be_following (other_user)}
+      its (:followed_users) {should_not include(other_user)}
+    end
+    describe "followed_users" do
+      subject {other_user}
+      its (:followers) {should include(@user)}
     end
   end
+
+
 end
